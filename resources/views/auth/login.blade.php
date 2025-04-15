@@ -10,7 +10,7 @@
             </div>
 
             <h2>Manager Portal</h2>
-            <form id="loginForm" method="POST" action="{{ route('login') }}">
+            <form id="" method="POST" action="{{ route('login') }}">
                 @csrf
 
                 <div class="form-group">
