@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,7 +13,7 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script src="{{ asset('js/dashboard.js') }}" defer></script>
-    
+
     <script src="{{ asset('js/script.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Add SheetJS library for Excel export -->
@@ -27,11 +28,14 @@
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
+
 <body>
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -47,14 +51,14 @@
                         @guest
                         @else
                             <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
+                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }}
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
+                                    <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
+                                                                     document.getElementById('logout-form').submit();">
                                         {{ __('Logout') }}
                                     </a>
 
@@ -70,8 +74,72 @@
         </nav>
 
         <main class="py-4">
-            @yield('content')
+            <div class="dashboard-layout">
+                <!-- Sidebar -->
+                <aside class="sidebar">
+                    <div class="sidebar-header">
+                        <h1>Australian<span>Dairy</span></h1>
+                    </div>
+                    <div class="sidebar-menu">
+                        <ul>
+                            <li class="active" data-section="overview">
+                                <a href="{{ route('home') }}">
+                                    <i class="fas fa-home"></i>
+                                    <span>Overview</span>
+                                </a>
+                            </li>
+                            <li data-section="farms" class="{{ (isset($activePage) && $activePage === 'farms') ? 'active' : '' }}">
+                                <a href="{{ route('farms.index') }}">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>Add/Update Farms</span>
+                                </a>
+                            </li>
+                            <li data-section="farms-inventory" class="{{ (isset($activePage) && $activePage === 'inventory') ? 'active' : '' }}">
+                                <a href="{{ route('farm-inventory.index') }}">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>Add Farms-Invertory</span>
+                                </a>
+                            </li>
+                            @php
+                                $states = \App\Models\State::all();
+                            @endphp
+                            @foreach($states as $state)
+                                <li class="{{ (isset($activePage) && $activePage == $state->id) ? 'active' : '' }}">
+                                    <a href="{{ route('state.dashboard', $state->id) }}">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        {{ $state->name }}
+                                    </a>
+                                </li>
+                            @endforeach
+
+                            <li data-section="reports">
+                                <a href="#reports">
+                                    <i class="fas fa-chart-bar"></i>
+                                    <span>Reports</span>
+                                </a>
+                            </li>
+                            <li data-section="settings">
+                                <a href="{{ route('setting.index') }}">
+                                    <i class="fas fa-cog"></i>
+                                    <span>Settings</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="sidebar-footer">
+                        <a href="login.html" class="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </aside>
+
+                <!-- Main Content -->
+                <main class="main-content">
+                    @yield('content')
+                </main>
+            </div>
         </main>
-    </div>
 </body>
+
 </html>

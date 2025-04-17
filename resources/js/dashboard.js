@@ -34,57 +34,57 @@ document.addEventListener('DOMContentLoaded', function() {
 /**
  * Activate a specific region tab
  */
-function activateRegion(region) {
-    const regionTab = document.querySelector(`.sidebar-menu li[data-section="${region}"]`);
+// function activateRegion(region) {
+//     const regionTab = document.querySelector(`.sidebar-menu li[data-section="${region}"]`);
     
-    if (regionTab) {
-        // Store the selection in localStorage
-        localStorage.setItem('selectedRegion', region);
+//     if (regionTab) {
+//         // Store the selection in localStorage
+//         localStorage.setItem('selectedRegion', region);
         
-        // Simulate a click on the tab
-        const regionLink = regionTab.querySelector('a');
-        if (regionLink) {
-            regionLink.click();
-        }
-    }
-}
+//         // Simulate a click on the tab
+//         const regionLink = regionTab.querySelector('a');
+//         if (regionLink) {
+//             regionLink.click();
+//         }
+//     }
+// }
 
-/**
- * Setup navigation between dashboard sections
- */
-function setupNavigation() {
-    const navLinks = document.querySelectorAll('.sidebar-menu a');
-    const contentSections = document.querySelectorAll('.content-section');
+// /**
+//  * Setup navigation between dashboard sections
+//  */
+// function setupNavigation() {
+//     const navLinks = document.querySelectorAll('.sidebar-menu a');
+//     const contentSections = document.querySelectorAll('.content-section');
     
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
+//     navLinks.forEach(link => {
+//         link.addEventListener('click', function(e) {
+//             e.preventDefault();
             
-            // Remove active class from all links and add to clicked link
-            navLinks.forEach(link => link.parentElement.classList.remove('active'));
-            this.parentElement.classList.add('active');
+//             // Remove active class from all links and add to clicked link
+//             navLinks.forEach(link => link.parentElement.classList.remove('active'));
+//             this.parentElement.classList.add('active');
             
-            // Get target section id from href attribute
-            const targetId = this.getAttribute('href').substring(1);
+//             // Get target section id from href attribute
+//             const targetId = this.getAttribute('href').substring(1);
             
-            // Hide all content sections and show target section
-            contentSections.forEach(section => {
-                section.classList.remove('active');
-                if (section.id === targetId) {
-                    section.classList.add('active');
-                    // Update header title
-                    document.querySelector('#section-title').textContent = this.querySelector('span').textContent;
+//             // Hide all content sections and show target section
+//             contentSections.forEach(section => {
+//                 section.classList.remove('active');
+//                 if (section.id === targetId) {
+//                     section.classList.add('active');
+//                     // Update header title
+//                     document.querySelector('#section-title').textContent = this.querySelector('span').textContent;
                     
-                    // Save the selected region if applicable
-                    const region = this.parentElement.dataset.section;
-                    if (['nsw', 'queensland', 'wa', 'victoria'].includes(region)) {
-                        localStorage.setItem('selectedRegion', region);
-                    }
-                }
-            });
-        });
-    });
-}
+//                     // Save the selected region if applicable
+//                     const region = this.parentElement.dataset.section;
+//                     if (['nsw', 'queensland', 'wa', 'victoria'].includes(region)) {
+//                         localStorage.setItem('selectedRegion', region);
+//                     }
+//                 }
+//             });
+//         });
+//     });
+// }
 
 /**
  * Setup mobile responsiveness for sidebar

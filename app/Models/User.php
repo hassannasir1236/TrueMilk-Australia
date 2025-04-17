@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-
+use App\Models\Farm;
+use App\Models\Role;
+use App\Models\State;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -45,4 +47,13 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
+    public function state()
+    {
+        return $this->belongsTo(State::class);
+    }
+    public function farms()
+    {
+        return $this->hasMany(Farm::class);
+    }
+
 }
