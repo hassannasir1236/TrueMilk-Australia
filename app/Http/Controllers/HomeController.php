@@ -125,15 +125,15 @@ class HomeController extends Controller
         ];
 
         foreach ($states as $state) {
-            $milkByProvince[$state->slug] = [
+            $milkByProvince[$state->name] = [
                 'name' => $state->name,
                 'milkCollection' => FarmInventory::where('state_id', $state->id)
-                    ->where('farm_item_id', $milkItem->id)
-                    ->where('unit', 'liters')
-                    ->sum('quantity')
+                ->where('farm_item_id', $milkItem->id)
+                ->where('unit', 'liters')
+                ->sum('quantity')
             ];
 
-            $cheeseByProvince[$state->slug] = [
+            $cheeseByProvince[$state->name] = [
                 'name' => $state->name,
                 'cheeseCollection' => FarmInventory::where('farm_item_id', $cheeseItem->id)
                     ->where('state_id', $state->id)
@@ -141,7 +141,6 @@ class HomeController extends Controller
                     ->sum('quantity')
             ];
         }
-
         // Monthly production for last 6 months (example)
         $months = now()->subMonths(5)->monthsUntil(now());
         foreach ($months as $month) {
