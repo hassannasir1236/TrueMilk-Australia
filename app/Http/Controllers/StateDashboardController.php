@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\State;
 use App\Models\Farm;
 use App\Models\FarmInventory;
+use App\Models\FarmItem;
+use Carbon\Carbon;
 class StateDashboardController extends Controller
 {
     public function __construct()
@@ -15,6 +17,107 @@ class StateDashboardController extends Controller
     }
     public function index($stateId = null)
     {
-        return view('state-dashboard', compact('stateId'));
+        $milkItem = FarmItem::where('name', 'milk')->first();
+        $cheeseItem = FarmItem::where('name', 'Cheese')->first();
+
+        // get the state name by stateid
+        $state = State::find($stateId);
+
+        $totalMilk = 0;
+        $totalCheese = 0;
+        // collect totoal milk in liters
+        if ($milkItem) {
+            $totalMilk = FarmInventory::where('state_id', $stateId)->where('farm_item_id', $milkItem->id)
+                            ->where('unit', 'liters')
+                            ->sum('quantity');
+        }
+        // collect total chesse in kg
+        if ($cheeseItem) {
+            $totalCheese = FarmInventory::where('state_id', $stateId)->where('farm_item_id', $cheeseItem->id)
+                                ->where('unit', 'kg')
+                                ->sum('quantity');
+        }
+        // collect total farms
+        $totalFarms = Farm::where('state_id', $stateId)->count('id');
+        // get the total price of inventory
+        $totalPrice = FarmInventory::where('state_id', $stateId)->sum('total_price');
+
+
+        // ge the last month to this month arrow
+    
+        $thisMonth = Carbon::now();
+        $lastMonth = Carbon::now()->subMonth();
+    
+        // Milk
+        $thisMonthMilk = FarmInventory::where('state_id', $stateId)->where('farm_item_id', $milkItem->id)
+            ->whereMonth('collected_on', $thisMonth->month)
+            ->whereYear('collected_on', $thisMonth->year)
+            ->sum('quantity');
+    
+        $lastMonthMilk = FarmInventory::where('state_id', $stateId)->where('farm_item_id', $milkItem->id)
+            ->whereMonth('collected_on', $lastMonth->month)
+            ->whereYear('collected_on', $lastMonth->year)
+            ->sum('quantity');
+
+        $milkPercentage = $lastMonthMilk > 0 
+            ? (($thisMonthMilk - $lastMonthMilk) / $lastMonthMilk) * 100 
+            : ($thisMonthMilk > 0 ? 100 : 0);
+
+        // Cheese
+        $thisMonthCheese = FarmInventory::where('state_id', $stateId)->where('farm_item_id', $cheeseItem->id)
+            ->whereMonth('collected_on', $thisMonth->month)
+            ->whereYear('collected_on', $thisMonth->year)
+            ->sum('quantity');
+    
+        $lastMonthCheese = FarmInventory::where('state_id', $stateId)->where('farm_item_id', $cheeseItem->id)
+            ->whereMonth('collected_on', $lastMonth->month)
+            ->whereYear('collected_on', $lastMonth->year)
+            ->sum('quantity');
+    
+        $cheesePercentage = $lastMonthCheese > 0 
+            ? (($thisMonthCheese - $lastMonthCheese) / $lastMonthCheese) * 100 
+            : ($thisMonthCheese > 0 ? 100 : 0);
+    
+        // Farms
+        $thisMonthFarms = Farm::where('state_id', $stateId)->whereMonth('created_at', $thisMonth->month)
+            ->whereYear('created_at', $thisMonth->year)
+            ->count();
+    
+        $lastMonthFarms = Farm::where('state_id', $stateId)->whereMonth('created_at', $lastMonth->month)
+            ->whereYear('created_at', $lastMonth->year)
+            ->count();
+    
+        $farmPercentage = $lastMonthFarms > 0 
+            ? (($thisMonthFarms - $lastMonthFarms) / $lastMonthFarms) * 100 
+            : ($thisMonthFarms > 0 ? 100 : 0);
+    
+        // Total Price
+        $thisMonthPrice = FarmInventory::where('state_id', $stateId)->whereMonth('collected_on', $thisMonth->month)
+            ->whereYear('collected_on', $thisMonth->year)
+            ->sum('total_price');
+    
+        $lastMonthPrice = FarmInventory::where('state_id', $stateId)->whereMonth('collected_on', $lastMonth->month)
+            ->whereYear('collected_on', $lastMonth->year)
+            ->sum('total_price');
+    
+        $pricePercentage = $lastMonthPrice > 0 
+            ? (($thisMonthPrice - $lastMonthPrice) / $lastMonthPrice) * 100 
+            : ($thisMonthPrice > 0 ? 100 : 0);
+        
+
+        // Suppiler/FarmInventory details
+        $FarmInventoryData = FarmInventory::where('state_id', $stateId)
+            ->with(['farm', 'item', 'state'])
+            ->orderBy('collected_on', 'desc')
+            ->get();
+        return view('state-dashboard', compact(
+            'stateId', 'state',
+                        'totalMilk', 'totalCheese', 'totalFarms', 'totalPrice',
+                        'thisMonthMilk', 'lastMonthMilk', 'milkPercentage',
+                        'thisMonthCheese', 'lastMonthCheese', 'cheesePercentage',
+                        'thisMonthFarms', 'lastMonthFarms', 'farmPercentage',
+                        'thisMonthPrice', 'lastMonthPrice', 'pricePercentage',
+                        'FarmInventoryData'
+        ));
     }
 }

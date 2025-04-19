@@ -80,9 +80,7 @@
                     </div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-icon">
                         <i class="fas fa-dollar-sign"></i>
-                    </div>
                     <div class="metric-info">
                         <h4>Monthly Revenue</h4>
                         <div class="metric-value">${{ $totalPrice }}</div>
@@ -95,7 +93,7 @@
             </div>
 
             <!-- Charts -->
-            <div class="chart-container">
+            <div class="chart-container" style="margin-top: 30px;">
                 <div class="chart-card">
                     <h4>Milk Collection by Region</h4>
                     <div class="chart-wrapper">
@@ -111,7 +109,7 @@
             </div>
 
             <!-- Recent Activity -->
-            <div class="activity-container">
+            <div class="activity-container" style="display: none;">
                 <h4>Recent Activity</h4>
                 <div class="activity-list">
                     <div class="activity-item">
