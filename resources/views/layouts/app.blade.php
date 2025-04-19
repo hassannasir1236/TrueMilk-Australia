@@ -90,13 +90,13 @@
                             </li>
                             <li data-section="farms" class="{{ (isset($activePage) && $activePage === 'farms') ? 'active' : '' }}">
                                 <a href="{{ route('farms.index') }}">
-                                    <i class="fas fa-map-marker-alt"></i>
+                                    <i class="fas fa-tractor"></i>
                                     <span>Add/Update Farms</span>
                                 </a>
                             </li>
                             <li data-section="farms-inventory" class="{{ (isset($activePage) && $activePage === 'inventory') ? 'active' : '' }}">
                                 <a href="{{ route('farm-inventory.index') }}">
-                                    <i class="fas fa-map-marker-alt"></i>
+                                    <i class="fas fa-boxes"></i>
                                     <span>Add Farms-Invertory</span>
                                 </a>
                             </li>

@@ -89,6 +89,15 @@
                         <div class="error">{{ $message }}</div>
                     @enderror
                 </div>
+                <div class="form-group">
+                    <label for="unit_price">Enter Per Liter/Kg Price</label>
+                    <input type="number" name="unit_price" id="unit_price" class="form-control" step="0.01"
+                        value="{{ old('unit_price', $inventory->total_price ?? '') }}" placeholder="Enter Per Liter/Kg Price">
+                    @error('unit_price')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+
 
                 <div class="form-group">
                     <label for="collected_on">Collected Date</label>

@@ -9,7 +9,7 @@ class Farminventory extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'state_id', 'farm_id', 'farm_item_id', 'quantity', 'unit', 'notes', 'collected_on'
+        'state_id', 'farm_id', 'farm_item_id', 'quantity', 'unit', 'notes', 'collected_on','total_price'
     ];
 
     public function farm() {

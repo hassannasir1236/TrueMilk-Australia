@@ -43,10 +43,12 @@ class FarmInventoryController extends Controller
             'unit' => 'required|in:liters,kg',
             'collected_on' => 'required|date',
             'notes' => 'nullable|string',
+            'unit_price' => 'nullable|numeric|min:0',
         ]);
         
         $data = $request->only(['state_id', 'farm_id', 'farm_item_id', 'quantity', 'unit', 'collected_on', 'notes']);
-        
+        $unitPrice = $request->input('unit_price', 0);
+        $data['total_price'] = $unitPrice * $data['quantity'];
         
         if ($request->filled('id')) {
      
