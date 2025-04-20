@@ -160,6 +160,17 @@ class StateDashboardController extends Controller
             'labels' => $productLabels,
             'data' => $productTotals
         ];
+
+        // table Regional Milk sourcing data
+        $milkByProvince = FarmInventory::where('farm_item_id', $milkItem->id)
+        ->where('unit', 'liters')
+        ->selectRaw('state_id, SUM(quantity) as total_quantity, SUM(total_price) as total_price, COUNT(DISTINCT farm_id) as total_farms')
+        ->groupBy('state_id')
+        ->get()
+        ->map(function ($row) {
+            $row->state_name = optional(State::find($row->state_id))->name ?? 'Unknown';
+            return $row;
+        });
         return view('state-dashboard', compact(
             'stateId',
             'state',
@@ -181,7 +192,8 @@ class StateDashboardController extends Controller
             'pricePercentage',
             'FarmInventoryData',
             'dailyMilk',
-            'productDistribution'
+            'productDistribution',
+            'milkByProvince'
         ));
     }
 }

@@ -58,7 +58,7 @@
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
-                                                                     document.getElementById('logout-form').submit();">
+                                                                         document.getElementById('logout-form').submit();">
                                         {{ __('Logout') }}
                                     </a>
 
@@ -88,13 +88,15 @@
                                     <span>Overview</span>
                                 </a>
                             </li>
-                            <li data-section="farms" class="{{ (isset($activePage) && $activePage === 'farms') ? 'active' : '' }}">
+                            <li data-section="farms"
+                                class="{{ (isset($activePage) && $activePage === 'farms') ? 'active' : '' }}">
                                 <a href="{{ route('farms.index') }}">
                                     <i class="fas fa-tractor"></i>
                                     <span>Add/Update Farms</span>
                                 </a>
                             </li>
-                            <li data-section="farms-inventory" class="{{ (isset($activePage) && $activePage === 'inventory') ? 'active' : '' }}">
+                            <li data-section="farms-inventory"
+                                class="{{ (isset($activePage) && $activePage === 'inventory') ? 'active' : '' }}">
                                 <a href="{{ route('farm-inventory.index') }}">
                                     <i class="fas fa-boxes"></i>
                                     <span>Add Farms-Invertory</span>
@@ -112,7 +114,7 @@
                                 </li>
                             @endforeach
 
-                            <li data-section="reports">
+                            <li data-section="reports" style="display: none;">
                                 <a href="#reports">
                                     <i class="fas fa-chart-bar"></i>
                                     <span>Reports</span>
@@ -127,10 +129,15 @@
                         </ul>
                     </div>
                     <div class="sidebar-footer">
-                        <a href="login.html" class="logout-btn">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Logout</span>
+                        <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
+                                                                     document.getElementById('logout-form').submit();"
+                            class="logout-btn">
+                            {{ __('Logout') }} <i class="fas fa-sign-out-alt"></i>
                         </a>
+
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                            @csrf
+                        </form>
                     </div>
                 </aside>
 

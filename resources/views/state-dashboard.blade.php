@@ -9,13 +9,13 @@
         <div class="state-header">
             <h3>{{$state->name}} Operations</h3>
             <!-- <div class="actions">
-                                            <button class="btn-secondary">
-                                                <i class="fas fa-download"></i> Export Data
-                                            </button>
-                                            <button class="btn">
-                                                <i class="fas fa-plus"></i> Add Supplier
-                                            </button>
-                                        </div> -->
+                                                <button class="btn-secondary">
+                                                    <i class="fas fa-download"></i> Export Data
+                                                </button>
+                                                <button class="btn">
+                                                    <i class="fas fa-plus"></i> Add Supplier
+                                                </button>
+                                            </div> -->
         </div>
 
         <!-- State Metrics -->
@@ -142,45 +142,27 @@
                                 <th>Region</th>
                                 <th>Volume (L/day)</th>
                                 <th>Farms</th>
-                                <th>Avg. Quality</th>
+                                <th>Total Price</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Hunter Valley</td>
-                                <td>8,500 L</td>
-                                <td>8</td>
-                                <td>A+</td>
-                            </tr>
-                            <tr>
-                                <td>Southern Highlands</td>
-                                <td>6,200 L</td>
-                                <td>5</td>
-                                <td>A</td>
-                            </tr>
-                            <tr>
-                                <td>Northern Rivers</td>
-                                <td>7,800 L</td>
-                                <td>6</td>
-                                <td>A</td>
-                            </tr>
-                            <tr>
-                                <td>Central Coast</td>
-                                <td>5,800 L</td>
-                                <td>4</td>
-                                <td>A</td>
-                            </tr>
-                            <tr>
-                                <td>Blue Mountains</td>
-                                <td>3,850 L</td>
-                                <td>5</td>
-                                <td>B+</td>
-                            </tr>
+                            @forelse ($milkByProvince as $data)
+                                <tr>
+                                    <td>{{ $data->state_name }}</td>
+                                    <td>{{ number_format($data->total_quantity, 2) }} L</td>
+                                    <td>{{ $data->total_farms }}</td>
+                                    <td>${{ number_format($data->total_price, 2) }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center">No data available</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
             </div>
-            <div class="chart-card">
+            <div class="chart-card" style="display:none;">
                 <h4>Processing Facilities</h4>
                 <div class="data-table-sm">
                     <table class="data-table">
@@ -220,11 +202,11 @@
 
     <!-- Embed JSON data safely -->
     <script id="dailyMilkData" type="application/json">
-        {!! json_encode($dailyMilk) !!}
-    </script>
+            {!! json_encode($dailyMilk) !!}
+        </script>
     <script id="productDistributionData" type="application/json">
-        {!! json_encode($productDistribution) !!}
-    </script>
+            {!! json_encode($productDistribution) !!}
+        </script>
 
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

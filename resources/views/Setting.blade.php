@@ -1,5 +1,5 @@
 @php
-    $activePage = 'inventory'; // or 'inventory', 'dashboard', etc.
+    $activePage = 'setting'; // or 'inventory', 'dashboard', etc.
 @endphp
 @extends('layouts.app')
 
