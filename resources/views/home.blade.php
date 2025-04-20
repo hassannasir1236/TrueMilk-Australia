@@ -79,11 +79,23 @@
                         </div>
                     </div>
                 </div>
+                @php
+                    function formatNumber($num) {
+                        if ($num >= 1000000) {
+                            return round($num / 1000000, 1) . 'M';
+                        } elseif ($num >= 1000) {
+                            return round($num / 1000, 1) . 'K';
+                        }
+                        return $num;
+                    }
+                @endphp
                 <div class="metric-card">
+                    <div class="metric-icon">
                         <i class="fas fa-dollar-sign"></i>
+                    </div>
                     <div class="metric-info">
                         <h4>Monthly Revenue</h4>
-                        <div class="metric-value">${{ $totalPrice }}</div>
+                        <div class="metric-value">${{ formatNumber(abs(round($totalPrice, 1))) }}</div>
                         <div class="metric-change {{ $pricePercentage >= 0 ? 'positive' : 'negative' }}">
                             <i class="fas {{ $pricePercentage >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' }}"></i>
                             {{ abs(round($pricePercentage, 1)) }}% from last month

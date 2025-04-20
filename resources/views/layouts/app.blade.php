@@ -44,109 +44,93 @@
                     <ul class="navbar-nav me-auto">
 
                     </ul>
-
-                    <!-- Right Side Of Navbar -->
-                    <ul class="navbar-nav ms-auto">
-                        <!-- Authentication Links -->
-                        @guest
-                        @else
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
-                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }}
-                                </a>
-
-                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
-                                                                         document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
-                                    </a>
-
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
-                                </div>
-                            </li>
-                        @endguest
-                    </ul>
                 </div>
             </div>
         </nav>
+        @auth
+                <main class="py-4">
+                    <div class="dashboard-layout">
+                        <!-- Sidebar -->
 
-        <main class="py-4">
-            <div class="dashboard-layout">
-                <!-- Sidebar -->
-                <aside class="sidebar">
-                    <div class="sidebar-header">
-                        <h1>Australian<span>Dairy</span></h1>
+                        <aside class="sidebar">
+                            <div class="sidebar-header">
+                                <h1>Australian<span>Dairy</span></h1>
+                            </div>
+                            <div class="sidebar-menu">
+                                <ul>
+                                    <li class="active" data-section="overview">
+                                        <a href="{{ route('home') }}">
+                                            <i class="fas fa-home"></i>
+                                            <span>Overview</span>
+                                        </a>
+                                    </li>
+                                    <li data-section="farms"
+                                        class="{{ (isset($activePage) && $activePage === 'farms') ? 'active' : '' }}">
+                                        <a href="{{ route('farms.index') }}">
+                                            <i class="fas fa-tractor"></i>
+                                            <span>Add/Update Farms</span>
+                                        </a>
+                                    </li>
+                                    <li data-section="farms-inventory"
+                                        class="{{ (isset($activePage) && $activePage === 'inventory') ? 'active' : '' }}">
+                                        <a href="{{ route('farm-inventory.index') }}">
+                                            <i class="fas fa-boxes"></i>
+                                            <span>Add Farms-Invertory</span>
+                                        </a>
+                                    </li>
+                                    @php
+                                        $states = \App\Models\State::all();
+                                    @endphp
+                                    @foreach($states as $state)
+                                        @if(empty(Auth::user()->state_id) || Auth::user()->state_id == $state->id)
+                                            <li class="{{ (isset($activePage) && $activePage == $state->id) ? 'active' : '' }}">
+                                                <a href="{{ route('state.dashboard', $state->id) }}">
+                                                    <i class="fas fa-map-marker-alt"></i>
+                                                    {{ $state->name }}
+                                                </a>
+                                            </li>
+                                        @endif
+                                    @endforeach
+
+                                    <li data-section="reports" style="display: none;">
+                                        <a href="#reports">
+                                            <i class="fas fa-chart-bar"></i>
+                                            <span>Reports</span>
+                                        </a>
+                                    </li>
+                                    <li data-section="settings"
+                                        class="{{ (isset($activePage) && $activePage == 'setting') ? 'active' : '' }}">
+                                        <a href="{{ route('setting.index') }}">
+                                            <i class="fas fa-cog"></i>
+                                            <span>Settings</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="sidebar-footer">
+                                <a class="dropdown-item" href="{{ route('logout') }}"
+                                    onclick="event.preventDefault();
+                                                                                document.getElementById('logout-form').submit();" class="logout-btn" style="color: white;">
+                                    {{ __('Logout') }} <i class="fas fa-sign-out-alt"></i>
+                                </a>
+
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                    @csrf
+                                </form>
+                            </div>
+                        </aside>
+
+                        <!-- Main Content -->
+                        <main class="main-content">
+                            @yield('content')
+                        </main>
                     </div>
-                    <div class="sidebar-menu">
-                        <ul>
-                            <li class="active" data-section="overview">
-                                <a href="{{ route('home') }}">
-                                    <i class="fas fa-home"></i>
-                                    <span>Overview</span>
-                                </a>
-                            </li>
-                            <li data-section="farms"
-                                class="{{ (isset($activePage) && $activePage === 'farms') ? 'active' : '' }}">
-                                <a href="{{ route('farms.index') }}">
-                                    <i class="fas fa-tractor"></i>
-                                    <span>Add/Update Farms</span>
-                                </a>
-                            </li>
-                            <li data-section="farms-inventory"
-                                class="{{ (isset($activePage) && $activePage === 'inventory') ? 'active' : '' }}">
-                                <a href="{{ route('farm-inventory.index') }}">
-                                    <i class="fas fa-boxes"></i>
-                                    <span>Add Farms-Invertory</span>
-                                </a>
-                            </li>
-                            @php
-                                $states = \App\Models\State::all();
-                            @endphp
-                            @foreach($states as $state)
-                                <li class="{{ (isset($activePage) && $activePage == $state->id) ? 'active' : '' }}">
-                                    <a href="{{ route('state.dashboard', $state->id) }}">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        {{ $state->name }}
-                                    </a>
-                                </li>
-                            @endforeach
-
-                            <li data-section="reports" style="display: none;">
-                                <a href="#reports">
-                                    <i class="fas fa-chart-bar"></i>
-                                    <span>Reports</span>
-                                </a>
-                            </li>
-                            <li data-section="settings">
-                                <a href="{{ route('setting.index') }}">
-                                    <i class="fas fa-cog"></i>
-                                    <span>Settings</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="sidebar-footer">
-                        <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
-                                                                     document.getElementById('logout-form').submit();"
-                            class="logout-btn">
-                            {{ __('Logout') }} <i class="fas fa-sign-out-alt"></i>
-                        </a>
-
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                            @csrf
-                        </form>
-                    </div>
-                </aside>
-
-                <!-- Main Content -->
-                <main class="main-content">
-                    @yield('content')
                 </main>
-            </div>
-        </main>
+        @else
+            <main class="py-4">
+                @yield('content')
+            </main>
+        @endauth
 </body>
 
 </html>
