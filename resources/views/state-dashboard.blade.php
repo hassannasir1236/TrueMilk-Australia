@@ -9,13 +9,13 @@
         <div class="state-header">
             <h3>{{$state->name}} Operations</h3>
             <!-- <div class="actions">
-                                <button class="btn-secondary">
-                                    <i class="fas fa-download"></i> Export Data
-                                </button>
-                                <button class="btn">
-                                    <i class="fas fa-plus"></i> Add Supplier
-                                </button>
-                            </div> -->
+                                            <button class="btn-secondary">
+                                                <i class="fas fa-download"></i> Export Data
+                                            </button>
+                                            <button class="btn">
+                                                <i class="fas fa-plus"></i> Add Supplier
+                                            </button>
+                                        </div> -->
         </div>
 
         <!-- State Metrics -->
@@ -77,31 +77,38 @@
                                 <th>Farm Name</th>
                                 <th>Location</th>
                                 <th>Daily Supply</th>
-                                <th>Quality Rating</th>
+                                <th>Quantity</th>
                                 <th>Last Delivery</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                        @if($FarmInventoryData->isNotEmpty())
-                            @foreach ($FarmInventoryData as $inventory)
+                            @if($FarmInventoryData->isNotEmpty())
+                                @foreach ($FarmInventoryData as $inventory)
+                                    <tr>
+                                        <td>{{ $inventory->farm->name ?? 'N/A' }}</td>
+                                        <td>{{ $inventory->state->name ?? 'N/A' }}</td>
+                                        <td>{{ $inventory->item->name ?? 'N/A' }}</td>
+                                        <td>{{ $inventory->quantity }} {{ $inventory->unit }}</td>
+                                        <td>{{ $inventory->collected_on }}</td>
+                                        <td>
+                                            <a href="{{ route('farm-inventory.edit', $inventory->id) }}" class="btn-icon"><i
+                                                    class="fas fa-edit"></i></a>
+                                            <form action="{{ route('farm-inventory.destroy', $inventory->id) }}" method="POST"
+                                                style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn-icon delete-button"><i
+                                                        class="fas fa-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @else
                                 <tr>
-                                    <td>{{ $inventory->farm->name ?? 'N/A' }}</td>
-                                    <td>{{ $inventory->state->name ?? 'N/A' }}</td>
-                                    <td>{{ $inventory->item->name ?? 'N/A' }}</td>
-                                    <td>{{ $inventory->quantity }} {{ $inventory->unit }}</td>
-                                    <td>{{ $inventory->collected_on }}</td>
-                                    <td>
-                                        <button class="btn-icon" title="View"><i class="fas fa-eye"></i></button>
-                                        <button class="btn-icon" title="Edit"><i class="fas fa-edit"></i></button>
-                                    </td>
+                                    <td colspan="6" class="text-center">No data available</td>
                                 </tr>
-                            @endforeach
-                        @else
-                            <tr>
-                                <td colspan="6" class="text-center">No data available</td>
-                            </tr>
-                        @endif
+                            @endif
                         </tbody>
                     </table>
                 </div>
@@ -113,7 +120,7 @@
             <div class="chart-card">
                 <h4>Daily Collection (Last Week)</h4>
                 <div class="chart-wrapper">
-                    <canvas id="nswDailyCollectionChart"></canvas>
+                    <canvas id="nswDailyCollectionLastWeakChart"></canvas>
                 </div>
             </div>
             <div class="chart-card">
@@ -210,4 +217,100 @@
             </div>
         </div>
     </section>
+
+    <!-- Embed JSON data safely -->
+    <script id="dailyMilkData" type="application/json">
+        {!! json_encode($dailyMilk) !!}
+    </script>
+    <script id="productDistributionData" type="application/json">
+        {!! json_encode($productDistribution) !!}
+    </script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const dailyMilk = JSON.parse(document.getElementById('dailyMilkData').textContent);
+            const productDistribution = JSON.parse(document.getElementById('productDistributionData').textContent);
+
+            // Daily Milk Collection (Line Chart)
+            new Chart(document.getElementById('nswDailyCollectionLastWeakChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: dailyMilk.labels,
+                    datasets: [{
+                        label: 'Milk Collection (Liters)',
+                        data: dailyMilk.data,
+                        borderColor: '#36A2EB',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Liters'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Product Distribution (Donut Chart)
+            new Chart(document.getElementById('nswProductDistributionChart').getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: productDistribution.labels,
+                    datasets: [{
+                        data: productDistribution.data,
+                        backgroundColor: productDistribution.labels.map(() =>
+                            `hsl(${Math.floor(Math.random() * 360)}, 60%, 65%)`
+                        ),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    return `${label}: ${value}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+
 @endsection
