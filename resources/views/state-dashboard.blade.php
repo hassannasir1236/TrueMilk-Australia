@@ -9,13 +9,13 @@
         <div class="state-header">
             <h3>{{$state->name}} Operations</h3>
             <!-- <div class="actions">
-                                                <button class="btn-secondary">
-                                                    <i class="fas fa-download"></i> Export Data
-                                                </button>
-                                                <button class="btn">
-                                                    <i class="fas fa-plus"></i> Add Supplier
-                                                </button>
-                                            </div> -->
+                                                    <button class="btn-secondary">
+                                                        <i class="fas fa-download"></i> Export Data
+                                                    </button>
+                                                    <button class="btn">
+                                                        <i class="fas fa-plus"></i> Add Supplier
+                                                    </button>
+                                                </div> -->
         </div>
 
         <!-- State Metrics -->
@@ -53,11 +53,22 @@
                     </div>
                 </div>
             </div>
+            @php
+                function formatNumber($num)
+                {
+                    if ($num >= 1000000) {
+                        return round($num / 1000000, 1) . 'M';
+                    } elseif ($num >= 1000) {
+                        return round($num / 1000, 1) . 'K';
+                    }
+                    return $num;
+                }
+            @endphp
             <div class="metric-card">
                 <div class="metric-icon"><i class="fas fa-dollar-sign"></i></div>
                 <div class="metric-info">
                     <h4>Monthly Revenue</h4>
-                    <div class="metric-value">${{ $totalPrice }}</div>
+                    <div class="metric-value">${{ formatNumber($totalPrice) }}</div>
                     <div class="metric-change {{ $pricePercentage >= 0 ? 'positive' : 'negative' }}">
                         <i class="fas {{ $pricePercentage >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' }}"></i>
                         {{ abs(round($pricePercentage, 1)) }}% from last month
@@ -202,11 +213,11 @@
 
     <!-- Embed JSON data safely -->
     <script id="dailyMilkData" type="application/json">
-            {!! json_encode($dailyMilk) !!}
-        </script>
+                {!! json_encode($dailyMilk) !!}
+            </script>
     <script id="productDistributionData" type="application/json">
-            {!! json_encode($productDistribution) !!}
-        </script>
+                {!! json_encode($productDistribution) !!}
+            </script>
 
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

@@ -1,3 +1,6 @@
+@php
+    $activePage = 'home'; // or 'inventory', 'dashboard', etc.
+@endphp
 @extends('layouts.app')
 
 @section('content')

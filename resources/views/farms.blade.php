@@ -83,8 +83,8 @@
                 <button type="submit">{{ isset($farm) ? 'Update' : 'Save' }}</button>
             </form>
 
-            <div class="data-container">
-                <div class="data-card">
+            <div class="data-container" style="height: 770px;border-radius:15px;">
+                <div class="data-card" style="height: auto;">
                     <h4>Farms Details</h4>
                     <div class="table-responsive">
                         <table class="data-table">

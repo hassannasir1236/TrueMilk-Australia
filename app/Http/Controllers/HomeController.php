@@ -28,7 +28,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $states = State::all(); 
+        $states = State::all();
         $milkItem = FarmItem::where('name', 'milk')->first();
         $cheeseItem = FarmItem::where('name', 'Cheese')->first();
 
@@ -37,85 +37,92 @@ class HomeController extends Controller
         // collect totoal milk in liters
         if ($milkItem) {
             $totalMilk = FarmInventory::where('farm_item_id', $milkItem->id)
-                            ->where('unit', 'liters')
-                            ->sum('quantity');
+                ->where('unit', 'liters')
+                ->sum('quantity');
         }
         // collect total chesse in kg
         if ($cheeseItem) {
             $totalCheese = FarmInventory::where('farm_item_id', $cheeseItem->id)
-                                ->where('unit', 'kg')
-                                ->sum('quantity');
+                ->where('unit', 'kg')
+                ->sum('quantity');
         }
         // collect total farms
         $totalFarms = Farm::count('id');
         // get the total price of inventory
         $totalPrice = FarmInventory::sum('total_price');
 
-        // ge the last month to this month arrow
-    
+        // ge the last month to this month arrow up/down code
+
         $thisMonth = Carbon::now();
         $lastMonth = Carbon::now()->subMonth();
-    
-        // Milk
+
         $thisMonthMilk = FarmInventory::where('farm_item_id', $milkItem->id)
             ->whereMonth('collected_on', $thisMonth->month)
             ->whereYear('collected_on', $thisMonth->year)
             ->sum('quantity');
-    
         $lastMonthMilk = FarmInventory::where('farm_item_id', $milkItem->id)
             ->whereMonth('collected_on', $lastMonth->month)
             ->whereYear('collected_on', $lastMonth->year)
             ->sum('quantity');
-    
-        $milkPercentage = $lastMonthMilk > 0 
-            ? (($thisMonthMilk - $lastMonthMilk) / $lastMonthMilk) * 100 
-            : ($thisMonthMilk > 0 ? 100 : 0);
-    
+
+        if ($lastMonthMilk > 0) {
+            $rawPercentage = (($thisMonthMilk - $lastMonthMilk) / $lastMonthMilk) * 100;
+        } else {
+            $rawPercentage = $thisMonthMilk > 0 ? 100 : 0;
+        }
+
+        // ✅ Cap percentage between 0 and 100
+        $milkPercentage = min(100, max(0, round($rawPercentage, 1)));
+
         // Cheese
         $thisMonthCheese = FarmInventory::where('farm_item_id', $cheeseItem->id)
             ->whereMonth('collected_on', $thisMonth->month)
             ->whereYear('collected_on', $thisMonth->year)
             ->sum('quantity');
-    
+
         $lastMonthCheese = FarmInventory::where('farm_item_id', $cheeseItem->id)
             ->whereMonth('collected_on', $lastMonth->month)
             ->whereYear('collected_on', $lastMonth->year)
             ->sum('quantity');
-    
-        $cheesePercentage = $lastMonthCheese > 0 
-            ? (($thisMonthCheese - $lastMonthCheese) / $lastMonthCheese) * 100 
+
+        $cheesePercentage = $lastMonthCheese > 0
+            ? (($thisMonthCheese - $lastMonthCheese) / $lastMonthCheese) * 100
             : ($thisMonthCheese > 0 ? 100 : 0);
-    
+        // ✅ Cap percentage between 0 and 100
+        $cheesePercentage = min(100, max(0, round($cheesePercentage, 1)));
+        
         // Farms
         $thisMonthFarms = Farm::whereMonth('created_at', $thisMonth->month)
             ->whereYear('created_at', $thisMonth->year)
             ->count();
-    
+
         $lastMonthFarms = Farm::whereMonth('created_at', $lastMonth->month)
             ->whereYear('created_at', $lastMonth->year)
             ->count();
-    
-        $farmPercentage = $lastMonthFarms > 0 
-            ? (($thisMonthFarms - $lastMonthFarms) / $lastMonthFarms) * 100 
+
+        $farmPercentage = $lastMonthFarms > 0
+            ? (($thisMonthFarms - $lastMonthFarms) / $lastMonthFarms) * 100
             : ($thisMonthFarms > 0 ? 100 : 0);
-    
+
         // Total Price
         $thisMonthPrice = FarmInventory::whereMonth('collected_on', $thisMonth->month)
             ->whereYear('collected_on', $thisMonth->year)
             ->sum('total_price');
-    
+
         $lastMonthPrice = FarmInventory::whereMonth('collected_on', $lastMonth->month)
             ->whereYear('collected_on', $lastMonth->year)
             ->sum('total_price');
-    
-        $pricePercentage = $lastMonthPrice > 0 
-            ? (($thisMonthPrice - $lastMonthPrice) / $lastMonthPrice) * 100 
-            : ($thisMonthPrice > 0 ? 100 : 0);
-        
 
+        $pricePercentage = $lastMonthPrice > 0
+            ? (($thisMonthPrice - $lastMonthPrice) / $lastMonthPrice) * 100
+            : ($thisMonthPrice > 0 ? 100 : 0);
+
+        // ✅ Cap percentage between 0 and 100
+        $pricePercentage = min(100, max(0, round($pricePercentage, 1)));
+                
 
         // Milk Collection By Region/province
-       
+
         $milkByProvince = [];
         $cheeseByProvince = [];
         $monthlyProduction = [
@@ -128,9 +135,9 @@ class HomeController extends Controller
             $milkByProvince[$state->name] = [
                 'name' => $state->name,
                 'milkCollection' => FarmInventory::where('state_id', $state->id)
-                ->where('farm_item_id', $milkItem->id)
-                ->where('unit', 'liters')
-                ->sum('quantity')
+                    ->where('farm_item_id', $milkItem->id)
+                    ->where('unit', 'liters')
+                    ->sum('quantity')
             ];
 
             $cheeseByProvince[$state->name] = [
@@ -158,12 +165,25 @@ class HomeController extends Controller
                 ->sum('quantity');
         }
         return view('home', compact(
-      'totalMilk', 'totalCheese', 'totalFarms', 'totalPrice',
-                'thisMonthMilk', 'lastMonthMilk', 'milkPercentage',
-                'thisMonthCheese', 'lastMonthCheese', 'cheesePercentage',
-                'thisMonthFarms', 'lastMonthFarms', 'farmPercentage',
-                'thisMonthPrice', 'lastMonthPrice', 'pricePercentage',
-                'milkByProvince','cheeseByProvince','monthlyProduction'
-            ));
+            'totalMilk',
+            'totalCheese',
+            'totalFarms',
+            'totalPrice',
+            'thisMonthMilk',
+            'lastMonthMilk',
+            'milkPercentage',
+            'thisMonthCheese',
+            'lastMonthCheese',
+            'cheesePercentage',
+            'thisMonthFarms',
+            'lastMonthFarms',
+            'farmPercentage',
+            'thisMonthPrice',
+            'lastMonthPrice',
+            'pricePercentage',
+            'milkByProvince',
+            'cheeseByProvince',
+            'monthlyProduction'
+        ));
     }
 }

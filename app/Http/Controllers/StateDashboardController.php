@@ -62,7 +62,8 @@ class StateDashboardController extends Controller
         $milkPercentage = $lastMonthMilk > 0
             ? (($thisMonthMilk - $lastMonthMilk) / $lastMonthMilk) * 100
             : ($thisMonthMilk > 0 ? 100 : 0);
-
+        // ✅ Cap percentage between 0 and 100
+        $milkPercentage = min(100, max(0, round($milkPercentage, 1)));
         // Cheese
         $thisMonthCheese = FarmInventory::where('state_id', $stateId)->where('farm_item_id', $cheeseItem->id)
             ->whereMonth('collected_on', $thisMonth->month)
@@ -77,7 +78,8 @@ class StateDashboardController extends Controller
         $cheesePercentage = $lastMonthCheese > 0
             ? (($thisMonthCheese - $lastMonthCheese) / $lastMonthCheese) * 100
             : ($thisMonthCheese > 0 ? 100 : 0);
-
+        // ✅ Cap percentage between 0 and 100
+        $cheesePercentage = min(100, max(0, round($cheesePercentage, 1)));
         // Farms
         $thisMonthFarms = Farm::where('state_id', $stateId)->whereMonth('created_at', $thisMonth->month)
             ->whereYear('created_at', $thisMonth->year)
@@ -90,7 +92,8 @@ class StateDashboardController extends Controller
         $farmPercentage = $lastMonthFarms > 0
             ? (($thisMonthFarms - $lastMonthFarms) / $lastMonthFarms) * 100
             : ($thisMonthFarms > 0 ? 100 : 0);
-
+        // ✅ Cap percentage between 0 and 100
+        $farmPercentage = min(100, max(0, round($farmPercentage, 1)));
         // Total Price
         $thisMonthPrice = FarmInventory::where('state_id', $stateId)->whereMonth('collected_on', $thisMonth->month)
             ->whereYear('collected_on', $thisMonth->year)
@@ -104,7 +107,8 @@ class StateDashboardController extends Controller
             ? (($thisMonthPrice - $lastMonthPrice) / $lastMonthPrice) * 100
             : ($thisMonthPrice > 0 ? 100 : 0);
 
-
+         // ✅ Cap percentage between 0 and 100
+         $pricePercentage = min(100, max(0, round($pricePercentage, 1)));
         // Suppiler/FarmInventory details
         $FarmInventoryData = FarmInventory::where('state_id', $stateId)
             ->with(['farm', 'item', 'state'])

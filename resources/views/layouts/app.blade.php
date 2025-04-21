@@ -58,7 +58,7 @@
                             </div>
                             <div class="sidebar-menu">
                                 <ul>
-                                    <li class="active" data-section="overview">
+                                    <li class="{{ (isset($activePage) && $activePage === 'home') ? 'active' : '' }}" data-section="overview">
                                         <a href="{{ route('home') }}">
                                             <i class="fas fa-home"></i>
                                             <span>Overview</span>
