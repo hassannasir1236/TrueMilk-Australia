@@ -107,8 +107,8 @@ class StateDashboardController extends Controller
             ? (($thisMonthPrice - $lastMonthPrice) / $lastMonthPrice) * 100
             : ($thisMonthPrice > 0 ? 100 : 0);
 
-         // ✅ Cap percentage between 0 and 100
-         $pricePercentage = min(100, max(0, round($pricePercentage, 1)));
+        // ✅ Cap percentage between 0 and 100
+        $pricePercentage = min(100, max(0, round($pricePercentage, 1)));
         // Suppiler/FarmInventory details
         $FarmInventoryData = FarmInventory::where('state_id', $stateId)
             ->with(['farm', 'item', 'state'])
@@ -167,14 +167,14 @@ class StateDashboardController extends Controller
 
         // table Regional Milk sourcing data
         $milkByProvince = FarmInventory::where('farm_item_id', $milkItem->id)
-        ->where('unit', 'liters')
-        ->selectRaw('state_id, SUM(quantity) as total_quantity, SUM(total_price) as total_price, COUNT(DISTINCT farm_id) as total_farms')
-        ->groupBy('state_id')
-        ->get()
-        ->map(function ($row) {
-            $row->state_name = optional(State::find($row->state_id))->name ?? 'Unknown';
-            return $row;
-        });
+            ->where('unit', 'liters')
+            ->selectRaw('state_id, SUM(quantity) as total_quantity, SUM(total_price) as total_price, COUNT(DISTINCT farm_id) as total_farms')
+            ->groupBy('state_id')
+            ->get()
+            ->map(function ($row) {
+                $row->state_name = optional(State::find($row->state_id))->name ?? 'Unknown';
+                return $row;
+            });
         return view('state-dashboard', compact(
             'stateId',
             'state',

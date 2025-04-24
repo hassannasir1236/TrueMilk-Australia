@@ -21,17 +21,17 @@ class FarmInventoryController extends Controller
         $states = State::all();
         $items = FarmItem::all();
         $inventories = FarmInventory::with(['state', 'farm', 'item'])->latest()->get();
-    
+
         $selectedStateId = old('state_id');
         $farms = [];
-    
+
         if ($selectedStateId) {
             $farms = Farm::where('state_id', $selectedStateId)->get();
         }
-    
+
         return view('farms-inventory', compact('states', 'items', 'farms', 'inventories'));
     }
-    
+
 
     public function store(Request $request)
     {
@@ -45,13 +45,13 @@ class FarmInventoryController extends Controller
             'notes' => 'nullable|string',
             'unit_price' => 'nullable|numeric|min:0',
         ]);
-        
+
         $data = $request->only(['state_id', 'farm_id', 'farm_item_id', 'quantity', 'unit', 'collected_on', 'notes']);
         $unitPrice = $request->input('unit_price', 0);
         $data['total_price'] = $unitPrice * $data['quantity'];
-        
+
         if ($request->filled('id')) {
-     
+
             // Update
             $inventory = FarmInventory::findOrFail($request->id);
             $inventory->update($data);
@@ -91,5 +91,5 @@ class FarmInventoryController extends Controller
         $farms = Farm::where('state_id', $state_id)->get();
         return response()->json($farms);
     }
-    
+
 }

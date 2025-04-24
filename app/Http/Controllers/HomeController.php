@@ -90,7 +90,7 @@ class HomeController extends Controller
             : ($thisMonthCheese > 0 ? 100 : 0);
         // ✅ Cap percentage between 0 and 100
         $cheesePercentage = min(100, max(0, round($cheesePercentage, 1)));
-        
+
         // Farms
         $thisMonthFarms = Farm::whereMonth('created_at', $thisMonth->month)
             ->whereYear('created_at', $thisMonth->year)
@@ -119,7 +119,7 @@ class HomeController extends Controller
 
         // ✅ Cap percentage between 0 and 100
         $pricePercentage = min(100, max(0, round($pricePercentage, 1)));
-                
+
 
         // Milk Collection By Region/province
 
