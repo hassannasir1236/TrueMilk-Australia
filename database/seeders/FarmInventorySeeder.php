@@ -9,24 +9,47 @@ use Faker\Factory as Faker;
 
 class FarmInventorySeeder extends Seeder
 {
+    // public function run()
+    // {
+    //     $faker = Faker::create();
+
+    //     $farms = Farm::all();
+
+    //     foreach ($farms as $farm) {
+    //         // ✅ 1. Seed required data for the last week (1–3 records per farm)
+    //         foreach (range(1, rand(1, 3)) as $i) {
+    //             $this->createInventoryRecord($faker, $farm, $faker->dateTimeBetween('-7 days', 'now'));
+    //         }
+
+    //         // ✅ 2. Seed historical data (5–10 records per farm, -5 years range)
+    //         foreach (range(1, rand(5, 10)) as $i) {
+    //             $this->createInventoryRecord($faker, $farm, $faker->dateTimeBetween('-5 years', '-8 days'));
+    //         }
+    //     }
+    // }
     public function run()
     {
         $faker = Faker::create();
 
         $farms = Farm::all();
 
-        foreach ($farms as $farm) {
-            // ✅ 1. Seed required data for the last week (1–3 records per farm)
-            foreach (range(1, rand(1, 3)) as $i) {
-                $this->createInventoryRecord($faker, $farm, $faker->dateTimeBetween('-7 days', 'now'));
-            }
+        if ($farms->isEmpty()) {
+            $this->command->warn('No farms found to assign inventory.');
+            return;
+        }
 
-            // ✅ 2. Seed historical data (5–10 records per farm, -5 years range)
-            foreach (range(1, rand(5, 10)) as $i) {
-                $this->createInventoryRecord($faker, $farm, $faker->dateTimeBetween('-5 years', '-8 days'));
-            }
+        foreach (range(1, 1000) as $i) {
+            $randomFarm = $farms->random();
+
+            // Randomly assign a recent or historical date
+            $collectedOn = $faker->boolean(30)
+                ? $faker->dateTimeBetween('-7 days', 'now') // recent (30% chance)
+                : $faker->dateTimeBetween('-5 years', '-8 days'); // historical (70% chance)
+
+            $this->createInventoryRecord($faker, $randomFarm, $collectedOn);
         }
     }
+
 
     protected function createInventoryRecord($faker, $farm, $collectedOn)
     {
